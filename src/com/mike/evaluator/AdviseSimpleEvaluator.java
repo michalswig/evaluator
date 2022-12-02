@@ -11,8 +11,8 @@ public class AdviseSimpleEvaluator implements Evaluator {
     @Override
     public boolean evaluate(Context context, Expression expression) {
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        DateTimeFormatter localDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         Map<String, VariableValue> variables = context.getVariables();
         validate(variables, expression);
@@ -52,29 +52,29 @@ public class AdviseSimpleEvaluator implements Evaluator {
                     return true;
                 }
                 //LOCALDATE
-                if(operator.equals(Operator.EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDate.parse(valueExpression, formatter).isEqual(LocalDate.parse(variables.get(key).getValue())))){
+                if(operator.equals(Operator.EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDate.parse(valueExpression, localDateFormatter).isEqual(LocalDate.parse(variables.get(key).getValue())))){
                     return true;
                 }
-                if(operator.equals(Operator.NOT_EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && !LocalDate.parse(valueExpression, formatter).isEqual(LocalDate.parse(variables.get(key).getValue()))){
+                if(operator.equals(Operator.NOT_EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && !LocalDate.parse(valueExpression, localDateFormatter).isEqual(LocalDate.parse(variables.get(key).getValue()))){
                     return true;
                 }
-                if(operator.equals(Operator.MORE.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDate.parse(valueExpression, formatter).isAfter(LocalDate.parse(variables.get(key).getValue())))){
+                if(operator.equals(Operator.MORE.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDate.parse(valueExpression, localDateFormatter).isAfter(LocalDate.parse(variables.get(key).getValue())))){
                     return true;
                 }
-                if(operator.equals(Operator.LESS.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDate.parse(valueExpression, formatter).isBefore(LocalDate.parse(variables.get(key).getValue())))){
+                if(operator.equals(Operator.LESS.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDate.parse(valueExpression, localDateFormatter).isBefore(LocalDate.parse(variables.get(key).getValue())))){
                     return true;
                 }
                 //LOCALDATETIME
-                if(operator.equals(Operator.EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDateTime.parse(valueExpression, formatterTime).isEqual(LocalDateTime.parse(variables.get(key).getValue())))){
+                if(operator.equals(Operator.EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDateTime.parse(valueExpression, localDateTimeFormatter).isEqual(LocalDateTime.parse(variables.get(key).getValue())))){
                     return true;
                 }
-                if(operator.equals(Operator.NOT_EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && !LocalDateTime.parse(valueExpression, formatterTime).isEqual(LocalDateTime.parse(variables.get(key).getValue()))){
+                if(operator.equals(Operator.NOT_EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && !LocalDateTime.parse(valueExpression, localDateTimeFormatter).isEqual(LocalDateTime.parse(variables.get(key).getValue()))){
                     return true;
                 }
-                if(operator.equals(Operator.MORE.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDateTime.parse(valueExpression, formatterTime).isAfter(LocalDateTime.parse(variables.get(key).getValue())))){
+                if(operator.equals(Operator.MORE.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDateTime.parse(valueExpression, localDateTimeFormatter).isAfter(LocalDateTime.parse(variables.get(key).getValue())))){
                     return true;
                 }
-                if(operator.equals(Operator.LESS.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDateTime.parse(valueExpression, formatterTime).isBefore(LocalDateTime.parse(variables.get(key).getValue())))){
+                if(operator.equals(Operator.LESS.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDateTime.parse(valueExpression, localDateTimeFormatter).isBefore(LocalDateTime.parse(variables.get(key).getValue())))){
                     return true;
                 }
             }
