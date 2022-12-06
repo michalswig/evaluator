@@ -8,23 +8,23 @@ public class Main {
 
         Expression expressionText = new Expression("customer.name == Adam");
         Expression expressionInteger = new Expression("customer.height >= 190");
-        Expression expressionDateBirth = new Expression("customer.dateOfBirth > 1982-01-15");
+        Expression expressionDateBirth = new Expression("customer.dateOfBirth > 1960-01-15");
         Expression expressionDateBirthTime = new Expression("customer.dateOfBirthTime > 1982-01-15 01:40");
         Evaluator evaluator = new AdviseSimpleEvaluator();
         Map<String, VariableValue> variables = new HashMap<>();
-        variables.put("customer.name", new VariableValue("Jacek", DataType.STRING));
+        variables.put("customer.name", new VariableValue("Adam", DataType.STRING));
         variables.put("customer.height", new VariableValue("183", DataType.INTEGER));
         variables.put("customer.dateOfBirth", new VariableValue("1978-01-01", DataType.DATE));
         variables.put("customer.dateOfBirthTime", new VariableValue("1978-01-01 00:01", DataType.DATE_TIME));
         Context context = new Context(variables);
         boolean evaluateText = evaluator.evaluate(context, expressionText);
-        System.out.println(evaluateText);
+        System.out.println("customer.name evaluate: " + evaluateText);
         boolean evaluateInteger = evaluator.evaluate(context, expressionInteger);
-        System.out.println(evaluateInteger);
+        System.out.println("customer.height evaluate: " + evaluateInteger);
         boolean evaluateDateBirth = evaluator.evaluate(context, expressionDateBirth);
-        System.out.println(evaluateDateBirth);
+        System.out.println("customer.dateOfBirth evaluate: " + evaluateDateBirth);
         boolean evaluateDateBirthTime = evaluator.evaluate(context, expressionDateBirthTime);
-        System.out.println(evaluateDateBirthTime);
+        System.out.println("customer.dateOfBirthTime evaluate: " + evaluateDateBirthTime);
 
 
     }

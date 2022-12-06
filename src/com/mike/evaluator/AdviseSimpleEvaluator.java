@@ -15,35 +15,39 @@ public class AdviseSimpleEvaluator implements Evaluator {
         DateTimeFormatter localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
         Map<String, VariableValue> variables = context.getVariables();
+
         validate(variables, expression);
 
         String value = expression.getValue();
 
-        String[] valuesExpression = value.trim().split(" ");
+        String[] expressions = value.trim().split(" ");
         String keyExpression;
         String operator;
-
         String valueExpression;
-        if (valuesExpression.length > 3) {
-            keyExpression = valuesExpression[0].trim();
-            operator = valuesExpression[1].trim();
-            valueExpression = valuesExpression[2].trim() + " " + valuesExpression[3].trim();
+
+        if (expressions.length > 3) {
+            keyExpression = expressions[0].trim();
+            operator = expressions[1].trim();
+            valueExpression = expressions[2].trim() + " " + expressions[3].trim();
         } else {
-            keyExpression = valuesExpression[0].trim();
-            operator = valuesExpression[1].trim();
-            valueExpression = valuesExpression[2].trim();
+            keyExpression = expressions[0].trim();
+            operator = expressions[1].trim();
+            valueExpression = expressions[2].trim();
         }
 
+        return checkIfTrue(localDateFormatter, localDateTimeFormatter, variables, keyExpression, operator, valueExpression);
+    }
 
+
+    private static boolean checkIfTrue(DateTimeFormatter localDateFormatter, DateTimeFormatter localDateTimeFormatter, Map<String, VariableValue> variables, String keyExpression, String operator, String valueExpression) {
         Set<String> keys = variables.keySet();
         for (String key : keys) {
 
             if (key.equals(keyExpression)) {
-                //STRINGS
+
                 if (operator.equals(Operator.EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.STRING) && valueExpression.equals(variables.get(key).getValue())) {
                     return true;
                 }
-                //INTEGERS
                 if (operator.equals(Operator.EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.INTEGER) && (Integer.parseInt(variables.get(key).getValue()) == Integer.parseInt(valueExpression))) {
                     return true;
                 }
@@ -62,7 +66,6 @@ public class AdviseSimpleEvaluator implements Evaluator {
                 if (operator.equals(Operator.NOT_EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.INTEGER) && (Integer.parseInt(variables.get(key).getValue()) != Integer.parseInt(valueExpression))) {
                     return true;
                 }
-                //LOCALDATE
                 if (operator.equals(Operator.EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDate.parse(variables.get(key).getValue(), localDateFormatter)).isEqual(LocalDate.parse(valueExpression, localDateFormatter))) {
                     return true;
                 }
@@ -75,7 +78,6 @@ public class AdviseSimpleEvaluator implements Evaluator {
                 if (operator.equals(Operator.LESS.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE) && (LocalDate.parse(variables.get(key).getValue(), localDateFormatter)).isBefore(LocalDate.parse(valueExpression, localDateFormatter))) {
                     return true;
                 }
-                //LOCALDATETIME
                 if (operator.equals(Operator.EQUAL.getOperator()) && variables.get(key).getDataType().equals(DataType.DATE_TIME) && ((LocalDateTime.parse(variables.get(key).getValue(), localDateTimeFormatter)).isEqual(LocalDateTime.parse(valueExpression, localDateTimeFormatter)))) {
                     return true;
                 }
@@ -89,8 +91,6 @@ public class AdviseSimpleEvaluator implements Evaluator {
                     return true;
                 }
             }
-
-
         }
         return false;
     }
