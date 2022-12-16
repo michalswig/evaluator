@@ -12,8 +12,8 @@ public class AdviseSimpleEvaluator implements Evaluator {
     @Override
     public boolean evaluate(Context context, Expression expression) {
         try {
-            DateTimeFormatter localDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            DateTimeFormatter localDateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
             Map<String, VariableValue> variables = context.getVariables();
             validate(variables, expression);
             String[] expressions = getStrings(expression);
@@ -28,10 +28,10 @@ public class AdviseSimpleEvaluator implements Evaluator {
                             return matchContextInteger(variables, operator, valueExpression, key);
                         }
                         case DATE -> {
-                            return matchContextDate(localDateFormatter, variables, operator, valueExpression, key);
+                            return matchContextDate(dateFormatter, variables, operator, valueExpression, key);
                         }
                         case DATE_TIME -> {
-                            return matchContextDateTime(localDateTimeFormatter, variables, operator, valueExpression, key);
+                            return matchContextDateTime(dateTimeFormatter, variables, operator, valueExpression, key);
                         }
                         case STRING -> {
                             return matchContextString(variables, operator, valueExpression, key);
@@ -47,16 +47,11 @@ public class AdviseSimpleEvaluator implements Evaluator {
 
     private static String[] getStrings(Expression expression) {
         String value = expression.getValue();
-        String[] expressions = value.trim().split(" ");
-        return expressions;
+        return value.trim().split(" ");
     }
 
     private static boolean matchContextString(Map<String, VariableValue> variables, String operator, String valueExpression, String key) {
-        if (operator.equals(Operator.EQUAL.getOperator()) && valueExpression.equals(variables.get(key).getValue()))
-            return true;
-        else {
-            return false;
-        }
+        return operator.equals(Operator.EQUAL.getOperator()) && valueExpression.equals(variables.get(key).getValue());
     }
 
     private static boolean matchContextDateTime(DateTimeFormatter localDateTimeFormatter, Map<String, VariableValue> variables, String operator, String valueExpression, String key) {
@@ -70,11 +65,7 @@ public class AdviseSimpleEvaluator implements Evaluator {
             return true;
         else if (operator.equals(Operator.MORE.getOperator()) && keyLocalDateTime.isAfter(expressionDateTime))
             return true;
-        else if (operator.equals(Operator.LESS.getOperator()) && keyLocalDateTime.isBefore(expressionDateTime))
-            return true;
-        else {
-            return false;
-        }
+        else return operator.equals(Operator.LESS.getOperator()) && keyLocalDateTime.isBefore(expressionDateTime);
     }
 
     private static boolean matchContextDate(DateTimeFormatter localDateFormatter, Map<String, VariableValue> variables, String operator, String valueExpression, String key) {
@@ -88,11 +79,7 @@ public class AdviseSimpleEvaluator implements Evaluator {
             return true;
         else if (operator.equals(Operator.MORE.getOperator()) && keyLocalDate.isAfter(expressionDate))
             return true;
-        else if (operator.equals(Operator.LESS.getOperator()) && keyLocalDate.isBefore(expressionDate))
-            return true;
-        else {
-            return false;
-        }
+        else return operator.equals(Operator.LESS.getOperator()) && keyLocalDate.isBefore(expressionDate);
     }
 
     private static boolean matchContextInteger(Map<String, VariableValue> variables, String operator, String valueExpression, String key) {
@@ -110,11 +97,7 @@ public class AdviseSimpleEvaluator implements Evaluator {
             return true;
         else if (operator.equals(Operator.LESS_EQUAL.getOperator()) && keyVariable <= valueExpressionData)
             return true;
-        else if (operator.equals(Operator.NOT_EQUAL.getOperator()) && keyVariable != valueExpressionData)
-            return true;
-        else {
-            return false;
-        }
+        else return operator.equals(Operator.NOT_EQUAL.getOperator()) && keyVariable != valueExpressionData;
     }
 
     private static void validate(Map<String, VariableValue> variables, Expression expression) {
