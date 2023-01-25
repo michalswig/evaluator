@@ -1,1 +1,1 @@
-# evaluator
+# evaluator - evaluates given expression with specific parameters which are provided in Context
