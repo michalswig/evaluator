@@ -1,11 +1,12 @@
 package pl.com.mike.evaluator;
 
+import pl.com.mike.evaluator.convert.Operators;
 import pl.com.mike.evaluator.convert.RPNConvert;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.*;
 
 public class RPNEvaluator implements Evaluator {
 
@@ -14,13 +15,69 @@ public class RPNEvaluator implements Evaluator {
     @Override
     public boolean evaluate(Context context, Expression expression) {
 
-        String[] tokens = RPNConvert.convertInfixToRPN(getTokensFromExpression(expression));
+        try {
 
-        Map<DataType, String> dataTypeWithValue = prepareExpression(tokens, context.getVariables());
+            String[] tokens = RPNConvert.convertInfixToRPN(getTokensFromExpression(expression));
 
-        return false;
+            Map<DataType, String> dataTypeWithValue = prepareExpression(tokens, context.getVariables());
+
+            Stack<String> stack = new Stack<>();
+
+            for (String token : tokens) {
+                if (isNotOperator(token)) {
+                    stack.push(token);
+                    continue;
+                }
+                switch (Operators.prepareOperator(token)) {
+                    case LESS -> prepareResultWhenLessOperator(dataTypeWithValue, stack);
+
+                }
+            }
+            return Boolean.parseBoolean(stack.pop());
+        } catch (DateTimeParseException | NumberFormatException | EmptyStackException e) {
+            throw new EvaluationException(e.getMessage());
+        }
 
     }
+
+    private static boolean isNotOperator(String token) {
+        for (Operators value : Operators.values()) {
+            if (value.getSymbol().equals(token)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void prepareResultWhenLessOperator(Map<DataType, String> valueDataTypeSet, Stack<String> stack) {
+        String valueFirst = stack.pop();
+        String valueSecond = stack.pop();
+        for (DataType dataType : valueDataTypeSet.keySet()) {
+            if (isValidDataType(valueDataTypeSet, valueFirst, valueSecond, dataType)) {
+                stack.push(getResultWhenLessOperator(valueFirst, valueSecond, dataType));
+            }
+        }
+    }
+
+    private static boolean isValidDataType(Map<DataType, String> valueDataTypeSet, String valueFirst, String valueSecond, DataType dataType) {
+        return valueDataTypeSet.get(dataType).equals(valueFirst) || valueDataTypeSet.get(dataType).equals(valueSecond);
+    }
+
+    private static String getResultWhenLessOperator(String valueFirst, String valueSecond, DataType dataType) {
+        switch (dataType) {
+            case DATE -> {
+                return String.valueOf(LocalDate.parse(valueSecond).isBefore(LocalDate.parse(valueFirst)));
+            }
+            case DATE_TIME -> {
+                return String.valueOf(LocalDateTime.parse(valueSecond).isBefore(LocalDateTime.parse(valueFirst)));
+            }
+            case INTEGER -> {
+                return String.valueOf(Integer.parseInt(valueSecond) < Integer.parseInt(valueFirst));
+            }
+        }
+        throw new EvaluationException("uknown data type: " + dataType);
+    }
+
 
     private static Map<DataType, String> prepareExpression(String[] tokens, Map<String, VariableValue> variables) {
         Map<DataType, String> valueDataTypes = new HashMap<>();
