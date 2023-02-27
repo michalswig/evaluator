@@ -30,6 +30,7 @@ public class RPNEvaluator implements Evaluator {
                 }
                 switch (Operators.prepareOperator(token)) {
                     case LESS -> prepareResultWhenLessOperator(dataTypeWithValue, stack);
+                    case LESS_EQUAL -> prepareResultWhenLessEqualOperator(dataTypeWithValue, stack);
 
                 }
             }
@@ -47,6 +48,16 @@ public class RPNEvaluator implements Evaluator {
             }
         }
         return true;
+    }
+
+    private static void prepareResultWhenLessEqualOperator(Map<DataType, String> valueDataTypeSet, Stack<String> stack) {
+        String valueFirst = stack.pop();
+        String valueSecond = stack.pop();
+        for (DataType dataType : valueDataTypeSet.keySet()) {
+            if (isValidDataType(valueDataTypeSet, valueFirst, valueSecond, dataType)) {
+                stack.push(getResultWhenLessEqualOperator(valueFirst, valueSecond, dataType));
+            }
+        }
     }
 
     private static void prepareResultWhenLessOperator(Map<DataType, String> valueDataTypeSet, Stack<String> stack) {
@@ -99,6 +110,21 @@ public class RPNEvaluator implements Evaluator {
 
     private static List<String> prepareTrimmedStrings(String[] tokens) {
         return Arrays.stream(tokens).map(String::trim).filter(x -> !(x.isEmpty())).toList();
+    }
+
+    private static String getResultWhenLessEqualOperator(String valueFirst, String valueSecond, DataType dataType) {
+        switch (dataType) {
+            case DATE -> {
+                return String.valueOf((LocalDate.parse(valueSecond).isBefore(LocalDate.parse(valueFirst)) || LocalDate.parse(valueSecond).isEqual(LocalDate.parse(valueFirst))));
+            }
+            case DATE_TIME -> {
+                return String.valueOf(LocalDateTime.parse(valueSecond).isBefore(LocalDateTime.parse(valueFirst)));
+            }
+            case INTEGER -> {
+                return String.valueOf(Integer.parseInt(valueSecond) <= Integer.parseInt(valueFirst));
+            }
+        }
+        throw new EvaluationException("uknown data type: " + dataType);
     }
 
 
