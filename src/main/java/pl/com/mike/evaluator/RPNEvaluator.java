@@ -31,6 +31,8 @@ public class RPNEvaluator implements Evaluator {
                 switch (Operators.prepareOperator(token)) {
                     case LESS -> prepareResultWhenLessOperator(dataTypeWithValue, stack);
                     case LESS_EQUAL -> prepareResultWhenLessEqualOperator(dataTypeWithValue, stack);
+                    case MORE -> prepareResultWhenMoreOperator(dataTypeWithValue, stack);
+                    case MORE_EQUAL -> prepareResultWhenMoreEqualOperator(dataTypeWithValue, stack);
 
                 }
             }
@@ -68,6 +70,56 @@ public class RPNEvaluator implements Evaluator {
                 stack.push(getResultWhenLessOperator(valueFirst, valueSecond, dataType));
             }
         }
+    }
+
+    private static void prepareResultWhenMoreOperator(Map<DataType, String> valueDataTypeSet, Stack<String> stack) {
+        String valueFirst = stack.pop();
+        String valueSecond = stack.pop();
+        for (DataType dataType : valueDataTypeSet.keySet()) {
+            if (isValidDataType(valueDataTypeSet, valueFirst, valueSecond, dataType)) {
+                stack.push(getResultWhenMoreOperator(valueFirst, valueSecond, dataType));
+            }
+        }
+    }
+
+    private static void prepareResultWhenMoreEqualOperator(Map<DataType, String> valueDataTypeSet, Stack<String> stack) {
+        String valueFirst = stack.pop();
+        String valueSecond = stack.pop();
+        for (DataType dataType : valueDataTypeSet.keySet()) {
+            if (isValidDataType(valueDataTypeSet, valueFirst, valueSecond, dataType)) {
+                stack.push(getResultWhenMoreEqualOperator(valueFirst, valueSecond, dataType));
+            }
+        }
+    }
+
+    private static String getResultWhenMoreEqualOperator(String valueFirst, String valueSecond, DataType dataType) {
+        switch (dataType) {
+            case DATE -> {
+                return String.valueOf(LocalDate.parse(valueSecond).isAfter(LocalDate.parse(valueFirst)) || LocalDate.parse(valueSecond).isEqual(LocalDate.parse(valueFirst)));
+            }
+            case DATE_TIME -> {
+                return String.valueOf(LocalDateTime.parse(valueSecond).isAfter(LocalDateTime.parse(valueFirst)) || LocalDateTime.parse(valueSecond).isEqual(LocalDateTime.parse(valueFirst)));
+            }
+            case INTEGER -> {
+                return String.valueOf(Integer.parseInt(valueSecond) >= Integer.parseInt(valueFirst));
+            }
+        }
+        throw new EvaluationException("uknown data type: " + dataType);
+    }
+
+    private static String getResultWhenMoreOperator(String valueFirst, String valueSecond, DataType dataType) {
+        switch (dataType) {
+            case DATE -> {
+                return String.valueOf(LocalDate.parse(valueSecond).isAfter(LocalDate.parse(valueFirst)));
+            }
+            case DATE_TIME -> {
+                return String.valueOf(LocalDateTime.parse(valueSecond).isAfter(LocalDateTime.parse(valueFirst)));
+            }
+            case INTEGER -> {
+                return String.valueOf(Integer.parseInt(valueSecond) > Integer.parseInt(valueFirst));
+            }
+        }
+        throw new EvaluationException("uknown data type: " + dataType);
     }
 
     private static boolean isValidDataType(Map<DataType, String> valueDataTypeSet, String valueFirst, String valueSecond, DataType dataType) {
