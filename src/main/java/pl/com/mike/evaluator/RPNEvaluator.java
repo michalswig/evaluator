@@ -35,6 +35,8 @@ public class RPNEvaluator implements Evaluator {
                     case MORE_EQUAL -> prepareResultWhenMoreEqualOperator(dataTypeWithValue, stack);
                     case EQUALITY -> prepareResultWhenEqualOperator(dataTypeWithValue, stack);
                     case NO_EQUALITY -> prepareResultWhenNotEqualOperator(dataTypeWithValue, stack);
+                    case LOGICAL_AND -> prepareResultWhenAndOperator(stack);
+                    case LOGICAL_OR -> prepareResultWhenOrOperator(stack);
                 }
             }
             return Boolean.parseBoolean(stack.pop());
@@ -111,6 +113,18 @@ public class RPNEvaluator implements Evaluator {
                 stack.push(getResultWhenNotEqualOperator(valueFirst, valueSecond, dataType));
             }
         }
+    }
+
+    private static void prepareResultWhenAndOperator(Stack<String> stack) {
+        String valueFirst = stack.pop();
+        String valueSecond = stack.pop();
+        stack.push(String.valueOf(valueSecond.equals(valueFirst)));
+    }
+
+    private static void prepareResultWhenOrOperator(Stack<String> stack) {
+        String valueFirst = stack.pop();
+        String valueSecond = stack.pop();
+        stack.push(String.valueOf((Boolean.parseBoolean(valueSecond) || Boolean.parseBoolean(valueFirst))));
     }
 
     private static String getResultWhenNotEqualOperator(String valueFirst, String valueSecond, DataType dataType) {
