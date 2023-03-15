@@ -10,10 +10,24 @@ import java.util.*;
 
 public class RPNEvaluator implements Evaluator {
 
+    public static final String EXPRESSION_IS_NULL = "Expression is null";
+    public static final String EXPRESSION_TRUE = "true";
+    public static final String EXPRESSION_FALSE = "false";
+
     public static final String SPLIT_REGEX = "(?<![(])(?=[)])|(?<![&|])(?=[&|])|(?<=[&|])(?![&|])|(?<![=+<>^*!()])(?=[=+<>^*!()])|(?<=[=+<>^*!()])(?![=+<>^*!()])";
 
     @Override
     public boolean evaluate(Context context, Expression expression) {
+
+        if (expression == null) {
+            throw new EvaluationException(EXPRESSION_IS_NULL);
+        }
+        if (expression.getValue().equals(EXPRESSION_TRUE)) {
+            return true;
+        }
+        if (expression.getValue().equals(EXPRESSION_FALSE)) {
+            return false;
+        }
 
         try {
 
