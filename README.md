@@ -1,1 +1,1 @@
-# evaluator - evaluates given expression with specific parameters which are provided in Context
+# evaluator - designed to streamline the process of dynamically assessing expressions based on context-specific parameters, making it a versatile tool for various application scenarios
